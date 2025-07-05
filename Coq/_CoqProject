@@ -1,5 +1,5 @@
 -docroot MyProject
--R MuPuzzle MuPuzzle
+-R NoSetOfAllSets NoSetOfAllSets
 -R CoqUtilLib CoqUtilLib
 -R FreeMonoid FreeMonoid
 CoqUtilLib/FunctionLemmas.v
@@ -28,4 +28,4 @@ FreeMonoid/StructMagma.v
 FreeMonoid/StructMonoid.v
 FreeMonoid/StructSemigroup.v
 FreeMonoid/TypeCategory.v
-MuPuzzle/MuPuzzle.v
+NoSetOfAllSets/NoSetOfAllSets.v
