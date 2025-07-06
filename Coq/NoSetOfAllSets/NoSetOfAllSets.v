@@ -58,3 +58,25 @@ Axiom extensionality_axiom : forall A B, (forall x, x ∈ A <-> x ∈ B) -> A = 
 
 (* Axiom of Union *)
 Axiom union_axiom : forall family_of_sets, exists union_set, forall x, x ∈ union_set <-> (exists y, y ∈ family_of_sets /\ x ∈ y).
+
+(* To Do*)
+(* Write the Axiom of infinity. *)
+(* Axiom infinite_set_exists : exists X, (exists e, (forall z, ~(z ∈ e) /\ (e ∈ X) /\ forall y, y ∈ X -> (y ∪ singleton y) ∈ X)). *)
+
+(* To Do*)
+(* Show a set exists. *)
+
+(* To Do*)
+(* Show an empty set exists. *)
+
+(* To Do*)
+(* Show the empty set is unique. *)
+
+(* To Do*)
+(* Show that for every set there is a singleton set which contains that set. *)
+
+(* Write the Axiom of regularity. *)
+
+(* Write the Axiom of Axiom schema of replacement. *)
+
+(* Write the Axiom of well-ordering (choice). *)
