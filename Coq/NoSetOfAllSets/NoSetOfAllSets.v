@@ -47,6 +47,42 @@ Proof.
 Qed.
 
 Axiom regularity : forall x, ((x <> ∅) -> exists y, (y ∈ x /\ y ∩ x = ∅)).
+
+Axiom specification_0 : forall (P : SetT -> SetT -> Prop),         forall z   , exists y, forall x, x ∈ y <-> ((x ∈ z) /\ P x    z).
+Axiom specification_1 : forall (P : SetT -> SetT -> SetT -> Prop), forall z w1, exists y, forall x, x ∈ y <-> ((x ∈ z) /\ P x w1 z).
+
+Axiom excluded_middle : forall P : Prop, P \/ ~ P.
+
+Theorem no_set_of_all_sets : ~(exists x, forall y, y ∈ x).
+Proof.
+  intro.
+  destruct H.
+  pose proof (specification_0 (fun x _ => ~(x ∈ x)) x).
+  destruct H0.
+  specialize H0 with (x := x0) as H1.
+  destruct H1.
+  assert (x0 ∈ x0 \/ ~ (x0 ∈ x0)).
+  {
+    apply excluded_middle.
+  }
+  destruct H3.
+  - apply H1.
+    + apply H3.
+    + apply H3.
+  - assert (x0 ∈ x /\ x0 ∈ x0).
+    {
+      split.
+      - apply H.
+      - apply H0.
+        split.
+        + apply H.
+        + apply H3.
+    }
+    destruct H4.
+    apply H3.
+    apply H5.
+Qed.
+
 Axiom union : forall f, exists a, forall y, forall x, ((x ∈ y /\ y ∈ f) -> x ∈ a).
 
 Theorem no_set_is_its_own_member : ~(exists x, x ∈ x).
@@ -71,7 +107,7 @@ Proof.
   pose proof union.
 Admitted.
 
-Theorem no_set_of_all_sets : ~(exists x, forall y, y ∈ x).
+Theorem no_set_of_all_sets_2 : ~(exists x, forall y, y ∈ x).
 Proof.
   intro.
   destruct H.
