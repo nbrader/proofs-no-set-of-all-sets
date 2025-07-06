@@ -51,9 +51,106 @@ Axiom regularity : forall x, ((x <> ∅) -> exists y, (y ∈ x /\ y ∩ x = ∅)
 Axiom specification_0 : forall (P : SetT -> SetT -> Prop),         forall z   , exists y, forall x, x ∈ y <-> ((x ∈ z) /\ P x    z).
 Axiom specification_1 : forall (P : SetT -> SetT -> SetT -> Prop), forall z w1, exists y, forall x, x ∈ y <-> ((x ∈ z) /\ P x w1 z).
 
-Axiom excluded_middle : forall P : Prop, P \/ ~ P.
-
 Theorem no_set_of_all_sets : ~(exists x, forall y, y ∈ x).
+Proof.
+  intro H.
+  destruct H as [U HU].
+  (* U is supposed to be the set of all sets *)
+  
+  (* Apply specification to construct Russell's set: {x ∈ U | x ∉ x} *)
+  pose proof (specification_0 (fun x _ => ~(x ∈ x)) U) as H_spec.
+  destruct H_spec as [R HR].
+  
+  (* R is the Russell set: x ∈ R iff x ∈ U and x ∉ x *)
+  (* Since U contains all sets, R ∈ U *)
+  assert (R ∈ U) as H_R_in_U.
+  { apply HU. }
+  
+  (* Now we derive a direct contradiction *)
+  (* Consider the statement "R ∈ R" *)
+  assert (R ∈ R <-> (R ∈ U /\ ~(R ∈ R))) as H_equiv.
+  { apply HR. }
+  
+  (* This gives us: R ∈ R iff (R ∈ U and ¬(R ∈ R)) *)
+  (* Since we know R ∈ U, this simplifies to: R ∈ R iff ¬(R ∈ R) *)
+  assert (R ∈ R <-> ~(R ∈ R)) as H_paradox.
+  { 
+    split.
+    - intro H_in.
+      apply H_equiv in H_in.
+      destruct H_in as [_ H_not_in].
+      exact H_not_in.
+    - intro H_not_in.
+      apply H_equiv.
+      split.
+      + exact H_R_in_U.
+      + exact H_not_in.
+  }
+  
+  (* Now we have R ∈ R iff ¬(R ∈ R), which is impossible *)
+  (* This is equivalent to P iff ¬P, which implies ¬P *)
+  assert (~(R ∈ R)) as H_not_R_in_R.
+  {
+    intro H_R_in_R.
+    apply H_paradox in H_R_in_R as H_R_in_R'.
+    apply H_R_in_R'.
+    apply H_R_in_R.
+  }
+  
+  (* But we can also derive R ∈ R *)
+  assert (R ∈ R) as H_R_in_R.
+  {
+    apply H_paradox.
+    exact H_not_R_in_R.
+  }
+  
+  (* Final contradiction *)
+  exact (H_not_R_in_R H_R_in_R).
+Qed.
+
+(* Alternative even more direct proof *)
+Theorem no_set_of_all_sets_direct : ~(exists x, forall y, y ∈ x).
+Proof.
+  intro H.
+  destruct H as [U HU].
+  
+  (* Construct Russell's set *)
+  pose proof (specification_0 (fun x _ => ~(x ∈ x)) U) as H_spec.
+  destruct H_spec as [R HR].
+  
+  (* R ∈ U since U contains all sets *)
+  assert (R ∈ U) as H_R_in_U by apply HU.
+  
+  (* The key insight: we can derive both R ∈ R and ¬(R ∈ R) *)
+  (* First, assume R ∈ R and derive contradiction *)
+  assert (~(R ∈ R)) as H1.
+  {
+    intro H_R_in_R.
+    (* If R ∈ R, then by definition of R, we have R ∈ U ∧ ¬(R ∈ R) *)
+    apply HR in H_R_in_R as H.
+    destruct H as [_ H_not_R_in_R].
+    (* So ¬(R ∈ R), contradicting our assumption *)
+    apply H_not_R_in_R.
+    apply H_R_in_R.
+  }
+  
+  (* Now derive R ∈ R *)
+  assert (R ∈ R) as H2.
+  {
+    (* Since R ∈ U and ¬(R ∈ R), by definition of R we have R ∈ R *)
+    apply HR.
+    split.
+    - exact H_R_in_U.
+    - exact H1.
+  }
+  
+  (* Final contradiction *)
+  exact (H1 H2).
+Qed.
+
+Axiom law_of_excluded_middle : forall P : Prop, P \/ ~ P.
+
+Theorem no_set_of_all_sets_lem : ~(exists x, forall y, y ∈ x).
 Proof.
   intro.
   destruct H.
@@ -63,7 +160,7 @@ Proof.
   destruct H1.
   assert (x0 ∈ x0 \/ ~ (x0 ∈ x0)).
   {
-    apply excluded_middle.
+    apply law_of_excluded_middle.
   }
   destruct H3.
   - apply H1.
