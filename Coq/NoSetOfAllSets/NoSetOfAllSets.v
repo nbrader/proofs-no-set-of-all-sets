@@ -2,21 +2,10 @@ Axiom SetT : Type.
 Axiom elementOf : SetT -> SetT -> Prop.
 Infix "∈" := elementOf (at level 70).
 
-Axiom extensionality : forall a b, (a = b -> (forall x, x ∈ a <-> x ∈ b)).
-
-Axiom pairing : forall x y, exists z, x ∈ z /\ y ∈ z.
-
 Definition subset : SetT -> SetT -> Prop := fun A B => forall x, x ∈ A -> x ∈ B.
 Infix "⊆" := subset (at level 70).
 
-Axiom intersection : SetT -> SetT -> SetT.
-Infix "∩" := intersection (at level 70).
-Axiom intersection_spec : forall a b x, x ∈ (a ∩ b) <-> x = a /\ x = b.
-
-Axiom powerset : SetT -> SetT.
-Axiom powerset_spec : forall a x, x ⊆ a <-> x ∈ powerset a.
-
-Axiom specification : forall (P : SetT -> Prop), forall z, exists y, forall x, x ∈ y <-> ((x ∈ z) /\ P x).
+Axiom specification_axiom : forall (P : SetT -> Prop), forall z, exists y, forall x, x ∈ y <-> ((x ∈ z) /\ P x).
 
 (* Alternative even more direct proof *)
 Theorem no_set_of_all_sets_direct : ~(exists x, forall y, y ∈ x).
@@ -25,7 +14,7 @@ Proof.
   destruct H as [U HU].
   
   (* Construct Russell's set *)
-  pose proof (specification (fun x => ~(x ∈ x)) U) as H_spec.
+  pose proof (specification_axiom (fun x => ~(x ∈ x)) U) as H_spec.
   destruct H_spec as [R HR].
   
   (* R ∈ U since U contains all sets *)
@@ -57,7 +46,11 @@ Proof.
   exact (H_not_R_in_R H_R_in_R).
 Qed.
 
-Axiom union : forall f, exists a, forall y, forall x, ((x ∈ y /\ y ∈ f) -> x ∈ a).
+
+Axiom pairing_axiom : forall x y, exists z, forall t, t ∈ z <-> (t = x \/ t = y).
+Axiom powerset_axiom : forall a, exists z, forall x, x ⊆ a <-> x ∈ z.
+Axiom extensionality_axiom : forall a b, (forall x, x ∈ a <-> x ∈ b) -> a = b.
+Axiom union_axiom : forall f, exists a, forall x, x ∈ a <-> (exists y, y ∈ f /\ x ∈ y).
 
 (*
 Axiom infinite_set_exists : exists X, (exists e, (forall z, ~(z ∈ e) /\ (e ∈ X) /\ forall y, y ∈ X -> (y ∪ singleton y) ∈ X)).
