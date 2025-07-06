@@ -1,72 +1,60 @@
 Axiom SetT : Type.
-Axiom elementOf : SetT -> SetT -> Prop.
-Infix "∈" := elementOf (at level 70).
+Axiom member : SetT -> SetT -> Prop.
+Infix "∈" := member (at level 70).
 
 Definition subset : SetT -> SetT -> Prop := fun A B => forall x, x ∈ A -> x ∈ B.
 Infix "⊆" := subset (at level 70).
 
-Axiom specification_axiom : forall (P : SetT -> Prop), forall z, exists y, forall x, x ∈ y <-> ((x ∈ z) /\ P x).
+(* Axiom Schema of Specification *)
+Axiom specification_axiom : forall (P : SetT -> Prop), forall A, exists B, forall x, x ∈ B <-> ((x ∈ A) /\ P x).
 
-(* Alternative even more direct proof *)
-Theorem no_set_of_all_sets_direct : ~(exists x, forall y, y ∈ x).
+Theorem no_set_of_all_sets : ~(exists U, forall X, X ∈ U).
 Proof.
-  intro H.
-  destruct H as [U HU].
-  
-  (* Construct Russell's set *)
-  pose proof (specification_axiom (fun x => ~(x ∈ x)) U) as H_spec.
-  destruct H_spec as [R HR].
-  
+  intro H_univ_set_exists.
+  destruct H_univ_set_exists as [U H_U_is_univ].
+
+  (* Construct Russell's set 'R' *)
+  (* The property P for Russell's set is 'x is not a member of x' *)
+  pose proof (specification_axiom (fun x => ~(x ∈ x)) U) as H_russell_spec.
+  destruct H_russell_spec as [R H_R_def].
+
   (* R ∈ U since U contains all sets *)
-  assert (R ∈ U) as H_R_in_U by apply HU.
-  
+  assert (R ∈ U) as H_R_in_U by apply H_U_is_univ.
+
   (* The key insight: we can derive both R ∈ R and ¬(R ∈ R) *)
   (* First, assume R ∈ R and derive contradiction *)
   assert (~(R ∈ R)) as H_not_R_in_R.
   {
     intro H_R_in_R.
     (* If R ∈ R, then by definition of R, we have R ∈ U ∧ ¬(R ∈ R) *)
-    apply HR in H_R_in_R as H.
-    destruct H as [_ H_not_R_in_R].
+    apply H_R_def in H_R_in_R as H_R_def_expanded.
+    destruct H_R_def_expanded as [_ H_R_not_in_R_from_def].
     (* So ¬(R ∈ R), contradicting our assumption *)
-    exact (H_not_R_in_R H_R_in_R).
+    exact (H_R_not_in_R_from_def H_R_in_R).
   }
-  
+
   (* Now derive R ∈ R *)
   assert (R ∈ R) as H_R_in_R.
   {
     (* Since R ∈ U and ¬(R ∈ R), by definition of R we have R ∈ R *)
-    apply HR.
+    apply H_R_def.
     split.
     - exact H_R_in_U.
     - exact H_not_R_in_R.
   }
-  
+
   (* Final contradiction *)
   exact (H_not_R_in_R H_R_in_R).
 Qed.
 
+(* Axiom of Pairing *)
+Axiom pairing_axiom : forall x y, exists pair_set, forall t, t ∈ pair_set <-> (t = x \/ t = y).
 
-Axiom pairing_axiom : forall x y, exists z, forall t, t ∈ z <-> (t = x \/ t = y).
-Axiom powerset_axiom : forall a, exists z, forall x, x ⊆ a <-> x ∈ z.
-Axiom extensionality_axiom : forall a b, (forall x, x ∈ a <-> x ∈ b) -> a = b.
-Axiom union_axiom : forall f, exists a, forall x, x ∈ a <-> (exists y, y ∈ f /\ x ∈ y).
+(* Axiom of Powerset *)
+Axiom powerset_axiom : forall base_set, exists power_set, forall x, x ⊆ base_set <-> x ∈ power_set.
 
-(*
-Axiom infinite_set_exists : exists X, (exists e, (forall z, ~(z ∈ e) /\ (e ∈ X) /\ forall y, y ∈ X -> (y ∪ singleton y) ∈ X)).
+(* Axiom of Extensionality *)
+Axiom extensionality_axiom : forall A B, (forall x, x ∈ A <-> x ∈ B) -> A = B.
 
-Theorem a_set_exists : exists x : SetT, x = x.
-Proof.
-  pose proof (specification (fun x => x = x)).
-  
-Qed.
-
-Definition empty : SetT -> Prop := fun s => forall x, ~ x ∈ s.
-Theorem empty_set_exists : exists x, empty x.
-Proof.
-  pose proof (specification empty).
-  reflexivity.
-Qed.
-
-Axiom regularity : forall x e, empty e -> ((x <> e) -> exists y, (y ∈ x /\ y ∩ x = e)).
-*)
+(* Axiom of Union *)
+Axiom union_axiom : forall family_of_sets, exists union_set, forall x, x ∈ union_set <-> (exists y, y ∈ family_of_sets /\ x ∈ y).
