@@ -1,7 +1,7 @@
 # proofs-no-set-of-all-sets
 A proof of the non-existence of a set of all sets.
 
-![alt text](SevenPointPartition.gif)
+![alt text](Russell's%20Paradox.png)
 
 This project has a submodule. When first cloned, you may be required to run a "Submodule Update" such as when using the TortoiseGit context menu.
 
