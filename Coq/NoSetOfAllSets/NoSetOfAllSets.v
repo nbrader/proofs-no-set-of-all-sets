@@ -86,6 +86,7 @@ Proof.
       + exact H_R_in_U.
       + exact H_not_in.
   }
+  clear H_equiv.
   
   (* Now we have R ∈ R iff ¬(R ∈ R), which is impossible *)
   (* This is equivalent to P iff ¬P, which implies ¬P *)
@@ -93,8 +94,7 @@ Proof.
   {
     intro H_R_in_R.
     apply H_paradox in H_R_in_R as H_R_in_R'.
-    apply H_R_in_R'.
-    apply H_R_in_R.
+    exact (H_R_in_R' H_R_in_R).
   }
   
   (* But we can also derive R ∈ R *)
@@ -123,29 +123,29 @@ Proof.
   
   (* The key insight: we can derive both R ∈ R and ¬(R ∈ R) *)
   (* First, assume R ∈ R and derive contradiction *)
-  assert (~(R ∈ R)) as H1.
+  assert (~(R ∈ R)) as H_not_R_in_R.
   {
     intro H_R_in_R.
     (* If R ∈ R, then by definition of R, we have R ∈ U ∧ ¬(R ∈ R) *)
     apply HR in H_R_in_R as H.
     destruct H as [_ H_not_R_in_R].
     (* So ¬(R ∈ R), contradicting our assumption *)
-    apply H_not_R_in_R.
-    apply H_R_in_R.
+    exact (H_not_R_in_R H_R_in_R).
   }
   
   (* Now derive R ∈ R *)
-  assert (R ∈ R) as H2.
+  assert (R ∈ R) as H_R_in_R.
   {
     (* Since R ∈ U and ¬(R ∈ R), by definition of R we have R ∈ R *)
     apply HR.
     split.
     - exact H_R_in_U.
-    - exact H1.
+    - exact H_not_R_in_R.
   }
+  clear H_R_in_U.
   
   (* Final contradiction *)
-  exact (H1 H2).
+  exact (H_not_R_in_R H_R_in_R).
 Qed.
 
 Axiom law_of_excluded_middle : forall P : Prop, P \/ ~ P.
